@@ -9,9 +9,9 @@
 
 
 define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
-    'N/error', 'N/url', 'N/format', 'N/currentRecord'
-  ],
-  function(email, runtime, search, record, http, log, error, url, format,
+  'N/error', 'N/url', 'N/format', 'N/currentRecord'
+],
+  function (email, runtime, search, record, http, log, error, url, format,
     currentRecord) {
     var zee = 0;
     var userId = 0;
@@ -37,18 +37,18 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
     function afterSubmit() {
       $(".se-pre-con").fadeOut("slow");
 
-      if (!isNullorEmpty($('#result_zee_leads_list').val())) {
-        $('#zee_leads_list_preview').removeClass('hide');
-        $('#zee_leads_list_preview').show();
-      }
+      // if (!isNullorEmpty($('#result_zee_leads_list').val())) {
+      //   $('#zee_leads_list_preview').removeClass('hide');
+      //   $('#zee_leads_list_preview').show();
+      // }
 
-      $('#result_zee_leads_list').on('change', function() {
-        $('#zee_leads_list_preview').removeClass('hide');
-        $('#zee_leads_list_preview').show();
-      });
+      // $('#result_zee_leads_list').on('change', function () {
+      //   $('#zee_leads_list_preview').removeClass('hide');
+      //   $('#zee_leads_list_preview').show();
+      // });
 
-      $('#zee_leads_list_preview').removeClass('hide');
-      $('#zee_leads_list_preview').show();
+      // $('#zee_leads_list_preview').removeClass('hide');
+      // $('#zee_leads_list_preview').show();
     }
 
     function pageInit() {
@@ -61,7 +61,18 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
       threeMonthsUninvoicedCustomersSet = [];
       sixMonthsUninvoicedCustomersDataSet = [];
       sixMonthsUninvoicedCustomersSet = [];
+
+      $(".lostCustomer").click(function () {
+        var customerInternalID = $(this).attr("data-id");
+
+        var cancelCustomerUrl = 'https://1048144.app.netsuite.com/app/site/hosting/scriptlet.nl?script=796&deploy=1&compid=1048144&custid=' + customerInternalID;
+
+        window.location.href = cancelCustomerUrl;
+
+      });
+
       submitSearch();
+      afterSubmit();
     }
 
     //Initialise the DataTable with headers.
@@ -75,13 +86,13 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
         columns: [{
           title: 'LINK'
         }, {
-          title: 'Internal ID'
-        }, {
           title: 'ID'
         }, {
           title: 'Customer Name'
         }, {
           title: 'Franchisee'
+        }, {
+          title: 'Status'
         }, {
           title: 'Last Invocie Date'
         }],
@@ -90,38 +101,38 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
           className: 'bolded'
         }, {
           className: "text-center",
-          targets: [0, 1, 2, 3, 4, 5]
+          targets: [0, 1, 2, 3, 4]
         }],
-        rowCallback: function(row, data, index) {}
+        rowCallback: function (row, data, index) { }
       });
 
-      dataTable = $('#6_months_list').DataTable({
-        destroy: true,
-        data: sixMonthsUninvoicedCustomersDataSet,
-        pageLength: 1000,
-        order: [],
-        columns: [{
-          title: 'LINK'
-        }, {
-          title: 'Internal ID'
-        }, {
-          title: 'ID'
-        }, {
-          title: 'Customer Name'
-        }, {
-          title: 'Franchisee'
-        }, {
-          title: 'Last Invocie Date'
-        }],
-        columnDefs: [{
-          targets: [1, 2],
-          className: 'bolded'
-        }, {
-          className: "text-center",
-          targets: [0, 1, 2, 3, 4, 5]
-        }],
-        rowCallback: function(row, data, index) {}
-      });
+      // dataTable2 = $('#6_months_list').DataTable({
+      //   destroy: true,
+      //   data: sixMonthsUninvoicedCustomersDataSet,
+      //   pageLength: 1000,
+      //   order: [],
+      //   columns: [{
+      //     title: 'LINK'
+      //   }, {
+      //     title: 'ID'
+      //   }, {
+      //     title: 'Customer Name'
+      //   }, {
+      //     title: 'Franchisee'
+      //   }, {
+      //     title: 'Status'
+      //   }, {
+      //     title: 'Last Invocie Date'
+      //   }],
+      //   columnDefs: [{
+      //     targets: [1, 2],
+      //     className: 'bolded'
+      //   }, {
+      //     className: "text-center",
+      //     targets: [0, 1, 2, 3, 4]
+      //   }],
+      //   rowCallback: function (row, data, index) { }
+      // });
 
       loadZeeSalesLeadSearch();
 
@@ -132,264 +143,274 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
 
     function loadZeeSalesLeadSearch() {
 
-      var dateFrom = myRecord.getValue({
-        fieldId: 'custpage_date_from'
+      //NetSuite Search: AUDIT - Customers - No Invoices last 3 Months
+      var searchCustomerList3Months = search.load({
+        id: 'customsearch_no_inv_last_3_months',
+        type: 'customer'
       });
 
-      //NetSuite Search: Franchisee Sales Leads - Website
-      var searchZeeLeadsList = search.load({
-        id: 'customsearch_zee_sales_lead_list',
-        type: 'customrecord_zee_sales_leads'
-      });
 
-      if (!isNullorEmpty(dateFrom)) {
-        searchZeeLeadsList.filters.push(search.createFilter({
-          name: 'custrecord_zee_lead_date_entered',
-          join: null,
-          operator: search.Operator.ONORAFTER,
-          values: dateFrom
-        }));
-      }
+      searchCustomerList3Months.run().each(function (
+        customerList3MonthsResultSet) {
 
-      searchZeeLeadsList.run().each(function(
-        tzeeLeadsListResultSet) {
-
-        var internalID = tzeeLeadsListResultSet.getValue({
-          name: 'internalid'
-        });
-        var date = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_lead_date_entered'
-        });
-        var fname = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_leads_fname'
-        });
-        var lname = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_leads_lname'
-        });
-        var mobile = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_lead_mobile'
-        });
-        var email = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_lead_email'
-        });
-        var type = tzeeLeadsListResultSet.getText({
-          name: 'custrecord_type_of_owner'
-        });
-        var suburb = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_areas_of_interest_suburb'
-        });
-        var postcode = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_areas_of_interest_postcode'
-        });
-        var state = tzeeLeadsListResultSet.getText({
-          name: 'custrecord_areas_of_interest_state'
-        });
-        var stage = tzeeLeadsListResultSet.getText({
-          name: 'custrecord_zee_lead_stage'
-        });
-        var stageID = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_lead_stage'
+        var internalID = customerList3MonthsResultSet.getValue({
+          name: 'internalid',
+          summary: "GROUP"
         });
 
-        zeeSalesLeadSet.push({
+        var entityID = customerList3MonthsResultSet.getValue({
+          name: "entityid",
+          summary: "GROUP",
+          label: "ID"
+        });
+
+        var companyName = customerList3MonthsResultSet.getValue({
+          name: "companyname",
+          summary: "GROUP",
+          sort: search.Sort.ASC,
+          label: "Company Name"
+        });
+
+        var franchiseeID = customerList3MonthsResultSet.getValue({
+          name: "partner",
+          summary: "GROUP",
+          sort: search.Sort.ASC,
+          label: "Franchisee"
+        });
+
+        var franchiseeName = customerList3MonthsResultSet.getText({
+          name: "partner",
+          summary: "GROUP",
+          sort: search.Sort.ASC,
+          label: "Franchisee"
+        });
+
+        var customerStatus = customerList3MonthsResultSet.getValue({
+          name: "entitystatus",
+          summary: "GROUP",
+          label: "Status"
+        });
+
+        var customerStatusText = customerList3MonthsResultSet.getText({
+          name: "entitystatus",
+          summary: "GROUP",
+          label: "Status"
+        });
+
+        var invoiceDate = customerList3MonthsResultSet.getValue({
+          name: "trandate",
+          join: "transaction",
+          summary: "MAX",
+          label: "Date"
+        });
+
+        threeMonthsUninvoicedCustomersSet.push({
           internalID: internalID,
-          date: date,
-          fname: fname,
-          lname: lname,
-          mobile: mobile,
-          email: email,
-          type: type,
-          suburb: suburb,
-          postcode: postcode,
-          state: state,
-          stage: stage,
-          stageID: stageID
+          entityID: entityID,
+          companyName: companyName,
+          franchiseeID: franchiseeID,
+          franchiseeName: franchiseeName,
+          customerStatus: customerStatus,
+          customerStatusText: customerStatusText,
+          invoiceDate: invoiceDate
         });
 
         return true;
       });
 
-      //NetSuite Search: Seeking Employment Leads - Website
-      var searchZeeLeadsList2 = search.load({
-        id: 'customsearch_zee_sales_lead_list_3',
-        type: 'customrecord_zee_sales_leads'
-      });
+      //NetSuite Search: AUDIT - Customers - No Invoices last 6 Months
+      // var searchCustomerList6Months = search.load({
+      //   id: 'customsearch_no_inv_last_6_months',
+      //   type: 'customer'
+      // });
 
-      if (!isNullorEmpty(dateFrom)) {
-        searchZeeLeadsList2.filters.push(search.createFilter({
-          name: 'custrecord_zee_lead_date_entered',
-          join: null,
-          operator: search.Operator.ONORAFTER,
-          values: dateFrom
-        }));
-      }
+      // searchCustomerList6Months.run().each(function (
+      //   customerList6MonthsResultSet) {
 
-      searchZeeLeadsList2.run().each(function(
-        tzeeLeadsListResultSet) {
+      //   var internalID = customerList6MonthsResultSet.getValue({
+      //     name: 'internalid',
+      //     summary: "GROUP"
+      //   });
 
-        var internalID = tzeeLeadsListResultSet.getValue({
-          name: 'internalid'
-        });
-        var date = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_lead_date_entered'
-        });
-        var fname = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_leads_fname'
-        });
-        var lname = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_leads_lname'
-        });
-        var mobile = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_lead_mobile'
-        });
-        var email = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_lead_email'
-        });
-        var type = tzeeLeadsListResultSet.getText({
-          name: 'custrecord_type_of_owner'
-        });
-        var suburb = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_areas_of_interest_suburb'
-        });
-        var postcode = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_areas_of_interest_postcode'
-        });
-        var state = tzeeLeadsListResultSet.getText({
-          name: 'custrecord_areas_of_interest_state'
-        });
-        var stage = tzeeLeadsListResultSet.getText({
-          name: 'custrecord_zee_lead_stage'
-        });
-        var stageID = tzeeLeadsListResultSet.getValue({
-          name: 'custrecord_zee_lead_stage'
-        });
+      //   var entityID = customerList6MonthsResultSet.getValue({
+      //     name: "entityid",
+      //     summary: "GROUP",
+      //     label: "ID"
+      //   });
 
-        zeeSalesLeadSet2.push({
-          internalID: internalID,
-          date: date,
-          fname: fname,
-          lname: lname,
-          mobile: mobile,
-          email: email,
-          type: type,
-          suburb: suburb,
-          postcode: postcode,
-          state: state,
-          stage: stage,
-          stageID: stageID
-        });
+      //   var companyName = customerList6MonthsResultSet.getValue({
+      //     name: "companyname",
+      //     summary: "GROUP",
+      //     sort: search.Sort.ASC,
+      //     label: "Company Name"
+      //   });
 
-        return true;
-      });
-      console.log(zeeSalesLeadSet)
-      console.log(zeeSalesLeadSet2)
+      //   var franchiseeID = customerList6MonthsResultSet.getValue({
+      //     name: "partner",
+      //     summary: "GROUP",
+      //     sort: search.Sort.ASC,
+      //     label: "Franchisee"
+      //   });
 
-      loadDatatable(zeeSalesLeadSet, zeeSalesLeadSet2);
-      zeeSalesLeadSet = [];
-      zeeSalesLeadSet2 = [];
+      //   var franchiseeName = customerList6MonthsResultSet.getText({
+      //     name: "partner",
+      //     summary: "GROUP",
+      //     sort: search.Sort.ASC,
+      //     label: "Franchisee"
+      //   });
+
+      //   var customerStatus = customerList6MonthsResultSet.getValue({
+      //     name: "entitystatus",
+      //     summary: "GROUP",
+      //     label: "Status"
+      //   });
+
+      //   var customerStatusText = customerList6MonthsResultSet.getText({
+      //     name: "entitystatus",
+      //     summary: "GROUP",
+      //     label: "Status"
+      //   });
+
+      //   var invoiceDate = customerList6MonthsResultSet.getValue({
+      //     name: "trandate",
+      //     join: "transaction",
+      //     summary: "MAX",
+      //     label: "Date"
+      //   });
+
+      //   sixMonthsUninvoicedCustomersSet.push({
+      //     internalID: internalID,
+      //     entityID: entityID,
+      //     companyName: companyName,
+      //     franchiseeID: franchiseeID,
+      //     franchiseeName: franchiseeName,
+      //     customerStatus: customerStatus,
+      //     customerStatusText: customerStatusText,
+      //     invoiceDate: invoiceDate
+      //   });
+      //   return true;
+      // });
+
+      console.log('Inside SubmitSearcvh Function. threeMonthsUninvoicedCustomersSet: ' + threeMonthsUninvoicedCustomersSet);
+      console.log('Inside SubmitSearcvh Function. sixMonthsUninvoicedCustomersSet: ' + sixMonthsUninvoicedCustomersSet);
+
+      loadDatatable(threeMonthsUninvoicedCustomersSet, sixMonthsUninvoicedCustomersSet);
+      threeMonthsUninvoicedCustomersSet = [];
+      sixMonthsUninvoicedCustomersSet = [];
 
     }
 
-    function loadDatatable(zeeSalesLeads_rows, zeeSalesLeads2_rows) {
+    function loadDatatable(threeMonthsUninvoicedCustomers_rows, sixMonthsUninvoicedCustomers_rows) {
 
-      zeeSalesLeadDataSet = [];
-      zeeSalesLeadDataSet2 = [];
+      threeMonthsUninvoicedCustomersDataSet = [];
+      sixMonthsUninvoicedCustomersDataSet = [];
       csvSet = [];
 
-      if (!isNullorEmpty(zeeSalesLeads_rows)) {
-        zeeSalesLeads_rows.forEach(function(zeeSalesLeads_row, index) {
-
-          if (zeeSalesLeads_row.stageID == 1) {
-            var linkURL =
-              '<button class="form-control btn btn-xs btn-primary" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="viewZeeLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="lostZeeLead" style="cursor: pointer !important;color: white;">LOST</a></button>';
-          } else if (zeeSalesLeads_row.stageID == 3) {
-            var linkURL =
-              '<button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;" disabled><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="" style="cursor: pointer !important;color: white;" disabled>LOST</a></button>';
-          } else if (zeeSalesLeads_row.stageID == 2) {
-            var linkURL =
-              '<button class="form-control btn btn-xs btn-primary" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="viewZeeLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="noTerritoryZeeLead" style="cursor: pointer !important;color: white;">NO TERRITORY</a></button>';
-          } else if (zeeSalesLeads_row.stageID == 5) {
-            var linkURL =
-              '<button class="form-control btn btn-xs btn-primary" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="viewZeeLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="deniedZeeLead" style="cursor: pointer !important;color: white;">OPPORTUNITY DENIED</a></button>';
-          } else if (zeeSalesLeads_row.stageID == 4) {
-            var linkURL =
-              '<button class="form-control btn btn-xs btn-primary" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="viewZeeLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;" disabled><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="" style="cursor: pointer !important;color: white;" disabled>NO TERRITORY</a></button>';
-          } else if (zeeSalesLeads_row.stageID == 6) {
-            var linkURL =
-              '<button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;" disabled><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="" style="cursor: pointer !important;color: white;" disabled>OPPORTUNITY DENIED</a></button>';
-          } else {
-            var linkURL =
-              '<button class="form-control btn btn-xs btn-primary" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="viewZeeLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-              zeeSalesLeads_row.internalID +
-              '" class="lostZeeLead" style="cursor: pointer !important;color: white;">LOST</a></button>';
-          }
-
-          zeeSalesLeadDataSet.push([linkURL, zeeSalesLeads_row.date,
-            zeeSalesLeads_row.fname,
-            zeeSalesLeads_row.lname, zeeSalesLeads_row.mobile,
-            zeeSalesLeads_row.email, zeeSalesLeads_row.type,
-            zeeSalesLeads_row.suburb, zeeSalesLeads_row.postcode,
-            zeeSalesLeads_row.state, zeeSalesLeads_row.stage
-          ]);
-        });
-      }
-      console.log(zeeSalesLeadDataSet)
-      var datatable = $('#investor_owner_table').DataTable();
-      datatable.clear();
-      datatable.rows.add(zeeSalesLeadDataSet);
-      datatable.draw();
-
-      if (!isNullorEmpty(zeeSalesLeads2_rows)) {
-        zeeSalesLeads2_rows.forEach(function(zeeSalesLeads2_row, index) {
+      if (!isNullorEmpty(threeMonthsUninvoicedCustomers_rows)) {
+        threeMonthsUninvoicedCustomers_rows.forEach(function (threeMonthsUninvoicedCustomers_row, index) {
 
           var linkURL =
             '<button class="form-control btn btn-xs btn-primary" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-            zeeSalesLeads2_row.internalID +
-            '" class="viewZeeLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-            zeeSalesLeads2_row.internalID +
-            '" class="lostZeeLead" style="cursor: pointer !important;color: white;">LOST</a></button>';
+            threeMonthsUninvoicedCustomers_row.internalID +
+            '" class="viewCustomerLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
+            threeMonthsUninvoicedCustomers_row.internalID +
+            '" class="lostCustomer" style="cursor: pointer !important;color: white;">CANCEL</a></button>';
 
-          zeeSalesLeadDataSet2.push([linkURL, zeeSalesLeads2_row.date,
-            zeeSalesLeads2_row.fname,
-            zeeSalesLeads2_row.lname, zeeSalesLeads2_row.mobile,
-            zeeSalesLeads2_row.email, zeeSalesLeads2_row.postcode,
-            zeeSalesLeads2_row.state, zeeSalesLeads2_row.stage
+          threeMonthsUninvoicedCustomersDataSet.push([linkURL, threeMonthsUninvoicedCustomers_row.entityID,
+            threeMonthsUninvoicedCustomers_row.companyName,
+            threeMonthsUninvoicedCustomers_row.franchiseeName, threeMonthsUninvoicedCustomers_row.customerStatusText,
+            threeMonthsUninvoicedCustomers_row.invoiceDate
           ]);
         });
       }
+      var datatable = $('#3_months_list').DataTable();
+      datatable.clear();
+      datatable.rows.add(threeMonthsUninvoicedCustomersDataSet);
+      datatable.draw();
 
-      console.log(zeeSalesLeadDataSet2)
-      var datatable2 = $('#seeking_employment_table').DataTable();
-      datatable2.clear();
-      datatable2.rows.add(zeeSalesLeadDataSet2);
-      datatable2.draw();
+      // if (!isNullorEmpty(sixMonthsUninvoicedCustomers_rows)) {
+      //   sixMonthsUninvoicedCustomers_rows.forEach(function (sixMonthsUninvoicedCustomers_row, index) {
+
+      //     var linkURL =
+      //       '<button class="form-control btn btn-xs btn-primary" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
+      //       sixMonthsUninvoicedCustomers_row.internalID +
+      //       '" class="viewCustomerLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
+      //       sixMonthsUninvoicedCustomers_row.internalID +
+      //       '" class="lostCustomer" style="cursor: pointer !important;color: white;">CANCEL</a></button>';
+
+      //     sixMonthsUninvoicedCustomersDataSet.push([linkURL, sixMonthsUninvoicedCustomers_row.entityID,
+      //       sixMonthsUninvoicedCustomers_row.companyName,
+      //       sixMonthsUninvoicedCustomers_row.franchiseeName, sixMonthsUninvoicedCustomers_row.customerStatusText,
+      //       sixMonthsUninvoicedCustomers_row.invoiceDate
+      //     ]);
+      //   });
+      // }
+      // var datatable2 = $('#6_months_list').DataTable();
+      // datatable2.clear();
+      // datatable2.rows.add(sixMonthsUninvoicedCustomersDataSet);
+      // datatable2.draw();
+
 
       return true;
     }
 
-    function saveRecord() {}
+    /**
+ * Create the CSV and store it in the hidden field
+ * 'custpage_table_csv' as a string.
+ *
+ * @param {Array}
+ *            ordersDataSet The `billsDataSet` created in
+ *            `loadDatatable()`.
+ */
+    function saveCsvPreview(ordersDataSet) {
+      var sep = "sep=;";
+      var headers = ["Calendar Week", "Sendle Parcel Count", "Job Count",
+        "Parcels/Job"
+      ]
+      headers = headers.join(';'); // .join(', ')
+
+      var csv = sep + "\n" + headers + "\n";
+
+      ordersDataSet.forEach(function (row) {
+        row = row.join(';');
+        csv += row;
+        csv += "\n";
+      });
+
+      var val1 = currentRecord.get();
+      val1.setValue({
+        fieldId: 'custpage_table_csv',
+        value: csv
+      });
+
+      return true;
+    }
+
+    function downloadCsv() {
+      var today = new Date();
+      today = formatDate(today);
+      var val1 = currentRecord.get();
+      var csv = val1.getValue({
+        fieldId: 'custpage_table_csv',
+      });
+      today = replaceAll(today);
+      var a = document.createElement("a");
+      document.body.appendChild(a);
+      a.style = "display: none";
+      var content_type = 'text/csv';
+      var csvFile = new Blob([csv], {
+        type: content_type
+      });
+      var url = window.URL.createObjectURL(csvFile);
+      var filename = 'Sendle Weekly Overview_' + today + '.csv';
+      a.href = url;
+      a.download = filename;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+    }
+
+    function saveRecord() { }
 
     function getDateToday() {
       var date = new Date();

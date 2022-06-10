@@ -10,9 +10,9 @@
 
 
 define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
-    'N/http', 'N/log', 'N/redirect', 'N/format'
-  ],
-  function(ui, email, runtime, search, record, http, log, redirect, format) {
+  'N/http', 'N/log', 'N/redirect', 'N/format'
+],
+  function (ui, email, runtime, search, record, http, log, redirect, format) {
 
     var color_array = ['blue', 'red', 'green', 'orange', 'black'];
 
@@ -37,7 +37,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
 
         //INITIALIZATION OF JQUERY AND BOOTSTRAP
         var inlineHtml =
-          '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css"><script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script><link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"><script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script><link rel="stylesheet" href="https://system.na2.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/><script src="https://system.na2.netsuite.com/core/media/media.nl?id=2060797&c=1048144&h=ef2cda20731d146b5e98&_xt=.js"></script><link type="text/css" rel="stylesheet" href="https://system.na2.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css"><script src="https://cdn.datatables.net/searchpanes/1.2.1/js/dataTables.searchPanes.min.js"><script src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script><script src="https://code.highcharts.com/highcharts.js"></script><script src="https://code.highcharts.com/modules/data.js"></script><script src="https://code.highcharts.com/modules/exporting.js"></script><script src="https://code.highcharts.com/modules/accessibility.js"></script></script><script src="https://code.highcharts.com/highcharts.js"></script><script src="https://code.highcharts.com/modules/data.js"></script><script src="https://code.highcharts.com/modules/drilldown.js"></script><script src="https://code.highcharts.com/modules/exporting.js"></script><script src="https://code.highcharts.com/modules/export-data.js"></script><script src="https://code.highcharts.com/modules/accessibility.js"></script><style>.mandatory{color:red;} .body{background-color: #CFE0CE !important;} @-webkit-keyframes animatetop {from {top:-300px; opacity:0} to {top:0; opacity:1}}@keyframes animatetop {from {top:-300px; opacity:0}to {top:0; opacity:1}}</style>';
+          '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css"><script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script><link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"><script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script><link rel="stylesheet" href="https://system.na2.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/><script src="https://system.na2.netsuite.com/core/media/media.nl?id=2060797&c=1048144&h=ef2cda20731d146b5e98&_xt=.js"></script><link type="text/css" rel="stylesheet" href="https://system.na2.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css"><script src="https://cdn.datatables.net/searchpanes/1.2.1/js/dataTables.searchPanes.min.js"><script src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script><style>.mandatory{color:red;} .body{background-color: #CFE0CE !important;} @-webkit-keyframes animatetop {from {top:-300px; opacity:0} to {top:0; opacity:1}}@keyframes animatetop {from {top:-300px; opacity:0}to {top:0; opacity:1}}</style>';
 
         //HIDDEN FIELDS
         form.addField({
@@ -48,23 +48,12 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
           displayType: ui.FieldDisplayType.HIDDEN
         })
 
-        form.addField({
-          id: 'custpage_date_from',
-          type: ui.FieldType.TEXT,
-          label: 'Date From'
-        }).updateDisplayType({
-          displayType: ui.FieldDisplayType.HIDDEN
-        }).defaultValue = dateFrom
-
-        inlineHtml += lostZeeLeadModal();
         //Loading Section that gets displayed when the page is being loaded
         inlineHtml +=
           '<div class="se-pre-con"></div><div ng-app="myApp" ng-controller="myCtrl">';
 
         inlineHtml += '<div id="container"></div>'
         inlineHtml += spacing()
-        // inlineHtml += mainButtons(role)
-        // inlineHtml += line();
         inlineHtml += tabsSection();
         inlineHtml += line();
         inlineHtml += '</div>';
@@ -77,8 +66,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
           layoutType: ui.FieldLayoutType.STARTROW
         }).defaultValue = inlineHtml;
 
-
-        form.clientScriptFileId = 5400652
+        form.clientScriptFileId = 5784698
         context.response.writePage(form);
 
       } else {
@@ -139,42 +127,11 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
     }
 
     /*
-     * PURPOSE : HTML code to generate the Modal Pop-up
-     *  PARAMS :  -
-     * RETURNS : HTML
-     *   NOTES :
-     */
-    function lostZeeLeadModal() {
-
-      var inlineHtml =
-        '<div id="myModal" class="modal" style="display: none; position: fixed; z-index: 1; padding-top: 100px;left: 0;top: 0;width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); "><div class="modal-content" style="position: absolute;transform: translate(-50%, -50%);background-color: #fefefe;/* margin: auto; *//* padding: 0; */border: 1px solid #888;width: 25%; left: 50%;top: 50%;/* box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); */-webkit-animation-name: animatetop;-webkit-animation-duration: 0.4s;animation-name: animatetop;animation-duration: 0.4s;"><div class="modal-header" style="padding: 2px 16px;text-align: center;"><span class="close" style="color: black;float: right;font-size: 28px;font-weight: bold;"">&times;</span><h3 class="modal-title" id="modal-title">Franchisee Lead Lost</h3></div>';
-
-      inlineHtml +=
-        '<div class="modal-body" style="padding: 2px 16px;">';
-      inlineHtml +=
-        '<div class="form-group container zee_lead_section">';
-      inlineHtml += '<div class="row">';
-      inlineHtml +=
-        '<div class="col-xs-3 zee_lead"><input type="text" id="zeeleadid" value="" hidden/><div class="input-group reason_input_group"><span class="input-group-addon" id="reason_text">REASON </span><select id="lostReason" class="form-control lostReason">';
-      inlineHtml +=
-        '<option value=0></option><option value=1>Price</option><option value=2>Finance</option><option value=3>Location</option>';
-
-      inlineHtml += '</select></div></div>';
-      inlineHtml += '</div></div>';
-
-      inlineHtml +=
-        '</div><div class="modal-footer" style="padding: 2px 16px;"><input type="button" value="LEAD LOST" class="form-control btn-danger" id="leadLost" style="" /></div></div></div>';
-
-      return inlineHtml;
-
-    }
-
-    /*
-     * PURPOSE : TABS SECTION TO CREATE 2 TABS - INVESTOR OR OWNER & SEEKING EMPLOYMENT
-     *  PARAMS :
-     * RETURNS : INLINEHTML
-     *   NOTES :
-     */
+    * PURPOSE : TABS SECTION TO CREATE 2 TABS - INVESTOR OR OWNER & SEEKING EMPLOYMENT
+    *  PARAMS :
+    * RETURNS : INLINEHTML
+    *   NOTES :
+    */
     function tabsSection() {
       var inlineHtml = '<div >';
 
@@ -189,22 +146,22 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
         '<div style="width: 95%; margin:auto; margin-bottom: 30px"><ul class="nav nav-pills nav-justified main-tabs-sections " style="margin:0%; ">';
 
       inlineHtml +=
-        '<li role="presentation" class="active"><a data-toggle="tab" href="#3_months_list"><b>LAST 3 MONTHS</b></a></li>';
-      inlineHtml +=
-        '<li role="presentation" class=""><a data-toggle="tab" href="#6_months_list"><b>LAST 6 MONTHS</b></a></li>';
+        '<li role="presentation" class="active"><a data-toggle="tab" href="#3_months_list_tab"><b>LAST 3 MONTHS</b></a></li>';
+      // inlineHtml +=
+      //   '<li role="presentation" class=""><a data-toggle="tab" href="#6_months_list_tab"><b>LAST 6 MONTHS</b></a></li>';
 
       inlineHtml += '</ul></div>';
 
       // Tabs content
       inlineHtml += '<div class="tab-content">';
       inlineHtml +=
-        '<div role="tabpanel" class="tab-pane active" id="3_months_list">';
+        '<div role="tabpanel" class="tab-pane active" id="3_months_list_tab">';
       inlineHtml += '<br></br>';
       inlineHtml += dataTable('3_months_list');
       inlineHtml += '</div>';
 
       inlineHtml +=
-        '<div role="tabpanel" class="tab-pane" id="6_months_list">';
+        '<div role="tabpanel" class="tab-pane" id="6_months_list_tab">';
       inlineHtml += '<br></br>';
       inlineHtml += dataTable('6_months_list');
       inlineHtml += '</div>';
@@ -223,7 +180,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
     function dataTable(name) {
       var inlineHtml = '<style>table#' +
         name +
-        ' {color: #103D39 !important; font-size: 12px;text-align: center;border: none;}.dataTables_wrapper {font-size: 14px;}table#mpexusage-' +
+        ' {color: #103D39 !important; font-size: 12px;text-align: center;border: none;}.dataTables_wrapper {font-size: 14px;}table#' +
         name +
         ' th{text-align: center;} .bolded{font-weight: bold;}</style>';
       inlineHtml += '<table id="' +
