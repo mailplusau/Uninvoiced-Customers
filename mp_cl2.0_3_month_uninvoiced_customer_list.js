@@ -62,16 +62,50 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
       sixMonthsUninvoicedCustomersDataSet = [];
       sixMonthsUninvoicedCustomersSet = [];
 
+
+
+      console.log('inside pageInit() function')
+
+      submitSearch();
+
       $(".lostCustomer").click(function () {
         var customerInternalID = $(this).attr("data-id");
 
         var cancelCustomerUrl = 'https://1048144.app.netsuite.com/app/site/hosting/scriptlet.nl?script=796&deploy=1&compid=1048144&custid=' + customerInternalID;
+        console.log(cancelCustomerUrl);
 
         window.location.href = cancelCustomerUrl;
 
       });
 
-      submitSearch();
+      $(document).on('click', '.create_note', function (event) {
+
+        var customerInternalID = $(this).attr("data-id");
+
+        var params2 = {
+          custid: customerInternalID,
+          sales_record_id: null,
+          reason: null,
+          id: 'customscript_sl2_uninvoiced_customer_lis',
+          deploy: 'customdeploy1',
+          type: 'create',
+          cancel: 'false'
+        };
+        params2 = JSON.stringify(params2);
+        var par = {
+          params: params2
+        }
+        var output = url.resolveScript({
+          scriptId: 'customscript_sl_create_user_note',
+          deploymentId: 'customdeploy_sl_create_user_note',
+          returnExternalUrl: false,
+          params: par
+        });
+
+        var upload_url = baseURL + output;
+        window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
+      });
+
       afterSubmit();
     }
 
@@ -97,11 +131,11 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
           title: 'Last Invocie Date'
         }],
         columnDefs: [{
-          targets: [1, 2],
+          targets: [1, 2, 5],
           className: 'bolded'
         }, {
           className: "text-center",
-          targets: [0, 1, 2, 3, 4]
+          targets: [0, 1, 2, 3, 4, 5]
         }],
         rowCallback: function (row, data, index) { }
       });
@@ -304,7 +338,8 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
 
       threeMonthsUninvoicedCustomersDataSet = [];
       sixMonthsUninvoicedCustomersDataSet = [];
-      csvSet = [];
+      threeMonthsUninvoicedCustomersCsvSet = [];
+      sixMonthsUninvoicedCustomersCsvSet = [];
 
       if (!isNullorEmpty(threeMonthsUninvoicedCustomers_rows)) {
         threeMonthsUninvoicedCustomers_rows.forEach(function (threeMonthsUninvoicedCustomers_row, index) {
@@ -312,7 +347,9 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
           var linkURL =
             '<button class="form-control btn btn-xs btn-primary" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
             threeMonthsUninvoicedCustomers_row.internalID +
-            '" class="viewCustomerLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
+            '" class="viewCustomerLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-info" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
+            threeMonthsUninvoicedCustomers_row.internalID +
+            '" class="create_note" style="cursor: pointer !important;color: white;">USER NOTE</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
             threeMonthsUninvoicedCustomers_row.internalID +
             '" class="lostCustomer" style="cursor: pointer !important;color: white;">CANCEL</a></button>';
 
@@ -321,12 +358,19 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
             threeMonthsUninvoicedCustomers_row.franchiseeName, threeMonthsUninvoicedCustomers_row.customerStatusText,
             threeMonthsUninvoicedCustomers_row.invoiceDate
           ]);
+          threeMonthsUninvoicedCustomersCsvSet.push([threeMonthsUninvoicedCustomers_row.internalID, threeMonthsUninvoicedCustomers_row.entityID,
+          threeMonthsUninvoicedCustomers_row.companyName,
+          threeMonthsUninvoicedCustomers_row.franchiseeName, threeMonthsUninvoicedCustomers_row.customerStatusText,
+          threeMonthsUninvoicedCustomers_row.invoiceDate
+          ]);
         });
       }
       var datatable = $('#3_months_list').DataTable();
       datatable.clear();
       datatable.rows.add(threeMonthsUninvoicedCustomersDataSet);
       datatable.draw();
+
+      saveCsvPreview(threeMonthsUninvoicedCustomersCsvSet);
 
       // if (!isNullorEmpty(sixMonthsUninvoicedCustomers_rows)) {
       //   sixMonthsUninvoicedCustomers_rows.forEach(function (sixMonthsUninvoicedCustomers_row, index) {
@@ -362,22 +406,23 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
  *            ordersDataSet The `billsDataSet` created in
  *            `loadDatatable()`.
  */
-    function saveCsvPreview(ordersDataSet) {
+    function saveCsvPreview(customerList) {
       var sep = "sep=;";
-      var headers = ["Calendar Week", "Sendle Parcel Count", "Job Count",
-        "Parcels/Job"
+      var headers = ["Customer Internal ID", "Customer ID", "Customer Name",
+        "Franchisee", "Customer Status", "Last Invoice Date"
       ]
       headers = headers.join(';'); // .join(', ')
 
       var csv = sep + "\n" + headers + "\n";
 
-      ordersDataSet.forEach(function (row) {
+      customerList.forEach(function (row) {
         row = row.join(';');
         csv += row;
         csv += "\n";
       });
 
       var val1 = currentRecord.get();
+
       val1.setValue({
         fieldId: 'custpage_table_csv',
         value: csv
@@ -402,7 +447,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
         type: content_type
       });
       var url = window.URL.createObjectURL(csvFile);
-      var filename = 'Sendle Weekly Overview_' + today + '.csv';
+      var filename = 'Uninvoiced Customers - Last 3 Months_' + today + '.csv';
       a.href = url;
       a.download = filename;
       a.click();
@@ -450,6 +495,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
     }
     return {
       pageInit: pageInit,
-      saveRecord: saveRecord
+      saveRecord: saveRecord,
+      downloadCsv: downloadCsv
     }
   });
