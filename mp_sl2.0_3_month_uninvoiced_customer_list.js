@@ -37,9 +37,9 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
 
         //INITIALIZATION OF JQUERY AND BOOTSTRAP
         var inlineHtml =
-          '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css"><script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script><link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"><script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script><link rel="stylesheet" href="https://system.na2.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/><script src="https://system.na2.netsuite.com/core/media/media.nl?id=2060797&c=1048';
+          '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script><script src="https://code.jquery.com/jquery-3.5.1.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"><link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.1.0/css/fixedColumns.dataTables.min.css"><link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.4.0/css/select.dataTables.min.css"><script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script><link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"><script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script><link rel="stylesheet" href="https://system.na2.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/><script src="https://system.na2.netsuite.com/core/media/media.nl?id=2060797&c=1048';
         inlineHtml +=
-          '144&h=ef2cda20731d146b5e98&_xt=.js"></script><link type="text/css" rel="stylesheet" href="https://system.na2.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css"><script src="https://cdn.datatables.net/searchpanes/1.2.1/js/dataTables.searchPanes.min.js"><script src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script><script src="https://code.highcharts.com/highcharts.js"></script><script src="https://code.highcharts.com/modules/data.js"></script><script src="https://code.highcharts.com/modules/exporting.js"></script><script src="https://code.highcharts.com/modules/accessibility.js"></script></script><script src="https://code.highcharts.com/highcharts.js"></script><script src="https://code.highcharts.com/modules/data.js"></script><script src="https://code.highcharts.com/modules/drilldown.js"></script><script src="https://code.highcharts.com/modules/exporting.js">';
+          '144&h=ef2cda20731d146b5e98&_xt=.js"></script><link type="text/css" rel="stylesheet" href="https://system.na2.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css"><script src="https://cdn.datatables.net/searchpanes/1.2.1/js/dataTables.searchPanes.min.js"><script src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script><script src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script><script src="https://code.highcharts.com/highcharts.js"></script><script src="https://code.highcharts.com/modules/data.js"></script><script src="https://code.highcharts.com/modules/exporting.js"></script><script src="https://code.highcharts.com/modules/accessibility.js"></script></script><script src="https://code.highcharts.com/highcharts.js"></script><script src="https://code.highcharts.com/modules/data.js"></script><script src="https://code.highcharts.com/modules/drilldown.js"></script><script src="https://code.highcharts.com/modules/exporting.js">';
         inlineHtml +=
           '</script><script src="https://code.highcharts.com/modules/export-data.js"></script><script src="https://code.highcharts.com/modules/accessibility.js"></script><style>.mandatory{color:red;} .body{background-color: #CFE0CE !important;}</style>';
 
@@ -59,9 +59,15 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
 
         inlineHtml += '<div id="container"></div>'
         inlineHtml += spacing()
+        inlineHtml += mainButtons(role)
+        inlineHtml += spacing()
         inlineHtml += tabsSection();
         inlineHtml += line();
         inlineHtml += '</div>';
+
+        form.addSubmitButton({
+          label: 'SAVE'
+        });
 
         form.addButton({
           id: 'download_csv',
@@ -124,15 +130,40 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
     function mainButtons(role) {
 
       var inlineHtml = ''
-      inlineHtml +=
-        '<div class="form-group container zee_available_buttons_section">';
-      inlineHtml += '<div class="row">';
-      inlineHtml +=
-        '<div class="col-xs-6"><input type="button" value="REPORTING PAGE" class="form-control btn btn-primary" id="reportingPage" /></div>'
-      inlineHtml +=
-        '<div class="col-xs-6 createLead"><input type="button" value="CREATE NEW LEAD" class="form-control btn btn-primary" id="updateDetails" /></div>'
-      inlineHtml += '</div>';
-      inlineHtml += '</div>';
+      if (role == '1022') {
+        inlineHtml +=
+          '<div class="form-group container zee_available_buttons_section">';
+        inlineHtml += '<div class="row">';
+        inlineHtml +=
+          '<div class="col-xs-6"><input type="button" value="NOTIFY SALES TEAM" class="form-control btn btn-primary" id="notifySalesTeam" /></div>'
+        inlineHtml +=
+          '<div class="col-xs-6 createLead"><input type="button" value="EXCLUDE ALL CUSTOMERS" class="form-control btn btn-primary" id="excludeAllCustomers" /></div>'
+        inlineHtml += '</div>';
+        inlineHtml += '</div>';
+      } else if (role == '1005') {
+        inlineHtml +=
+          '<div class="form-group container zee_available_buttons_section">';
+        inlineHtml += '<div class="row">';
+        inlineHtml +=
+          '<div class="col-xs-6"><input type="button" value="NOTIFY IT TEAM" class="form-control btn btn-primary" id="notifySalesTeam" /></div>'
+        inlineHtml +=
+          '<div class="col-xs-6 createLead"><input type="button" value="EXCLUDE ALL CUSTOMERS" class="form-control btn btn-primary" id="excludeAllCustomers" /></div>'
+        inlineHtml += '</div>';
+        inlineHtml += '</div>';
+      } else if (role == '3' || role == '1032') {
+        inlineHtml +=
+          '<div class="form-group container zee_available_buttons_section">';
+        inlineHtml += '<div class="row">';
+        inlineHtml +=
+          '<div class="col-xs-4"><input type="button" value="NOTIFY SALES TEAM" class="form-control btn btn-primary" id="notifySalesTeam" /></div>'
+        inlineHtml +=
+          '<div class="col-xs-4"><input type="button" value="NOTIFY IT TEAM" class="form-control btn btn-primary" id="notifySalesTeam" /></div>'
+        inlineHtml +=
+          '<div class="col-xs-4 createLead"><input type="button" value="EXCLUDE ALL CUSTOMERS" class="form-control btn btn-primary" id="excludeAllCustomers" /></div>'
+        inlineHtml += '</div>';
+        inlineHtml += '</div>';
+      }
+
 
       return inlineHtml
     }
@@ -147,37 +178,37 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
       var inlineHtml = '<div >';
 
       // Tabs headers
-      inlineHtml +=
-        '<style>.nav > li.active > a, .nav > li.active > a:focus, .nav > li.active > a:hover { background-color: #379E8F; color: #fff }';
-      inlineHtml +=
-        '.nav > li > a, .nav > li > a:focus, .nav > li > a:hover { margin-left: 5px; margin-right: 5px; border: 2px solid #379E8F; color: #379E8F; }';
-      inlineHtml += '</style>';
+      // inlineHtml +=
+      //   '<style>.nav > li.active > a, .nav > li.active > a:focus, .nav > li.active > a:hover { background-color: #379E8F; color: #fff }';
+      // inlineHtml +=
+      //   '.nav > li > a, .nav > li > a:focus, .nav > li > a:hover { margin-left: 5px; margin-right: 5px; border: 2px solid #379E8F; color: #379E8F; }';
+      // inlineHtml += '</style>';
 
-      inlineHtml +=
-        '<div style="width: 95%; margin:auto; margin-bottom: 30px"><ul class="nav nav-pills nav-justified main-tabs-sections " style="margin:0%; ">';
+      // inlineHtml +=
+      //   '<div style="width: 95%; margin:auto; margin-bottom: 30px"><ul class="nav nav-pills nav-justified main-tabs-sections " style="margin:0%; ">';
 
-      inlineHtml +=
-        '<li role="presentation" class="active"><a data-toggle="tab" href="#3_months_list_tab"><b>LAST 3 MONTHS</b></a></li>';
+      // inlineHtml +=
+      //   '<li role="presentation" class="active"><a data-toggle="tab" href="#3_months_list_tab"><b>LAST 3 MONTHS</b></a></li>';
       // inlineHtml +=
       //   '<li role="presentation" class=""><a data-toggle="tab" href="#6_months_list_tab"><b>LAST 6 MONTHS</b></a></li>';
 
-      inlineHtml += '</ul></div>';
+      // inlineHtml += '</ul></div>';
 
       // Tabs content
-      inlineHtml += '<div class="tab-content">';
-      inlineHtml +=
-        '<div role="tabpanel" class="tab-pane active" id="3_months_list_tab">';
-      inlineHtml += '<br></br>';
+      // inlineHtml += '<div class="tab-content">';
+      // inlineHtml +=
+      //   '<div role="tabpanel" class="tab-pane active" id="3_months_list_tab">';
+      // inlineHtml += '<br></br>';
       inlineHtml += dataTable('3_months_list');
-      inlineHtml += '</div>';
+      // inlineHtml += '</div>';
 
-      inlineHtml +=
-        '<div role="tabpanel" class="tab-pane" id="6_months_list_tab">';
-      inlineHtml += '<br></br>';
+      // inlineHtml +=
+      //   '<div role="tabpanel" class="tab-pane" id="6_months_list_tab">';
+      // inlineHtml += '<br></br>';
       inlineHtml += dataTable('6_months_list');
       inlineHtml += '</div>';
 
-      inlineHtml += '</div></div>';
+      // inlineHtml += '</div></div>';
 
       return inlineHtml;
     }
@@ -193,13 +224,13 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
         name +
         ' {color: #103D39 !important; font-size: 12px;text-align: center;border: none;}.dataTables_wrapper {font-size: 14px;}table#' +
         name +
-        ' th{text-align: center;} .bolded{font-weight: bold;} td{text-align: center;}</style>';
+        ' th{text-align: center !important;} .bolded{font-weight: bold;} .text-center{text-align: center !important; vertical-align: middle !important;} td{text-align: center !important;}</style>';
       inlineHtml += '<table id="' +
         name +
         '" class="table table-responsive table-striped customer tablesorter" style="width: 100%;">';
       inlineHtml += '<thead style="color: white;background-color: #379E8F;">';
-      inlineHtml += '<tr class="text-center">';
-
+      inlineHtml += '<tr>';
+      inlineHtml += ' <th><input name="select_all" value="1" id="example-select-all" type="checkbox" /></th><th>Link</th><th>ID</th><th>COMPANY NAME</th><th>FRANCHISEE</th><th>STATUS</th><th>LAST INVOICE DATE</th>'
       inlineHtml += '</tr>';
       inlineHtml += '</thead>';
 

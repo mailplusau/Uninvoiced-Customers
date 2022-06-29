@@ -30,6 +30,10 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
 
     var tollUploadSet = [];
 
+    var dataTable;
+
+    var selectedCustomers = [];
+
     function pageLoad() {
       $('.loading_section').removeClass('hide');
     }
@@ -66,7 +70,10 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
 
       console.log('inside pageInit() function')
 
-      submitSearch();
+      submitSearch(dataTable);
+
+      var rows = dataTable.rows({ 'search': 'applied' }).nodes();
+      $('input[type="checkbox"]', rows).prop('checked', $('#example-select-all').checked);
 
       $(".lostCustomer").click(function () {
         var customerInternalID = $(this).attr("data-id");
@@ -106,6 +113,43 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
         window.open(upload_url, "_self", "height=750,width=650,modal=yes,alwaysRaised=yes");
       });
 
+      $('#example-select-all').on('click', function () {
+        // Check/uncheck all checkboxes in the table
+        var rows = dataTable.rows({ 'search': 'applied' }).nodes();
+        $('.selectCustomer', rows).prop('checked', this.checked);
+        $('.selectCustomer', rows).attr('checked', 'checked');
+      });
+
+      // Handle click on checkbox to set state of "Select all" control
+      $(document).on('change', '.selectCustomer', function () {
+        console.log($(this).get(0).checked);
+        // If checkbox is not checked
+        if ($(this).get(0).checked) {
+          console.log('Checkbox is checked')
+          this.setAttribute("checked", "checked");
+          var el = $('#example-select-all').get(0);
+          // If "Select all" control is checked and has 'indeterminate' property
+          if (el && el.checked && ('indeterminate' in el)) {
+            // Set visual state of "Select all" control 
+            // as 'indeterminate'
+            el.indeterminate = true;
+            // $(this).get(0).checked = true;
+            // $(this).prop("checked") = true;
+
+          }
+        } else {
+          console.log('checkbox is not checked')
+          // $(this).get(0).checked = false;
+          // $(this).prop("checked") = false;
+          this.removeAttribute('checked');
+        }
+      });
+
+      $(document).on('click', '#notifySalesTeam', function () {
+
+        document.getElementById('submitter').click();
+      });
+
       afterSubmit();
     }
 
@@ -117,26 +161,44 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
         data: threeMonthsUninvoicedCustomersDataSet,
         pageLength: 1000,
         order: [],
-        columns: [{
-          title: 'LINK'
-        }, {
-          title: 'ID'
-        }, {
-          title: 'Customer Name'
-        }, {
-          title: 'Franchisee'
-        }, {
-          title: 'Status'
-        }, {
-          title: 'Last Invocie Date'
-        }],
+        select: true,
+        // columns: [{
+
+        // }, {
+        //   title: 'LINK'
+        // }, {
+        //   title: 'ID'
+        // }, {
+        //   title: 'Customer Name'
+        // }, {
+        //   title: 'Franchisee'
+        // }, {
+        //   title: 'Status'
+        // }, {
+        //   title: 'Last Invocie Date'
+        // }],
         columnDefs: [{
-          targets: [1, 2, 5],
+          targets: 0,
+          searchable: false,
+          orderable: false,
+          className: 'dt-body-center',
+          render: function (data, type, full, meta) {
+            return '<input type="checkbox" class="selectCustomer" class="" name="id[]" value="'
+              + $('<div/>').text(data).html() + '" >';
+          }
+        }, {
+          targets: [2, 3, 6],
           className: 'bolded'
         }, {
           className: "text-center",
-          targets: [0, 1, 2, 3, 4, 5]
-        }],
+          targets: [0, 1, 2, 3, 4, 5, 6]
+        }], select: {
+          style: 'multi',
+          selector: 'td:first-child'
+        },
+        "createdRow": function (row, data, dataIndex) {
+          $(row).attr("id", "tblRow_" + data[0]);
+        },
         rowCallback: function (row, data, index) { }
       });
 
@@ -344,6 +406,11 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
       if (!isNullorEmpty(threeMonthsUninvoicedCustomers_rows)) {
         threeMonthsUninvoicedCustomers_rows.forEach(function (threeMonthsUninvoicedCustomers_row, index) {
 
+          if (role == '1022') {
+
+          } else {
+
+          }
           var linkURL =
             '<button class="form-control btn btn-xs btn-primary" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
             threeMonthsUninvoicedCustomers_row.internalID +
@@ -353,10 +420,10 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
             threeMonthsUninvoicedCustomers_row.internalID +
             '" class="lostCustomer" style="cursor: pointer !important;color: white;">CANCEL</a></button>';
 
-          threeMonthsUninvoicedCustomersDataSet.push([linkURL, threeMonthsUninvoicedCustomers_row.entityID,
-            threeMonthsUninvoicedCustomers_row.companyName,
-            threeMonthsUninvoicedCustomers_row.franchiseeName, threeMonthsUninvoicedCustomers_row.customerStatusText,
-            threeMonthsUninvoicedCustomers_row.invoiceDate
+          threeMonthsUninvoicedCustomersDataSet.push([threeMonthsUninvoicedCustomers_row.internalID, linkURL, threeMonthsUninvoicedCustomers_row.entityID,
+          threeMonthsUninvoicedCustomers_row.companyName,
+          threeMonthsUninvoicedCustomers_row.franchiseeName, threeMonthsUninvoicedCustomers_row.customerStatusText,
+          threeMonthsUninvoicedCustomers_row.invoiceDate
           ]);
           threeMonthsUninvoicedCustomersCsvSet.push([threeMonthsUninvoicedCustomers_row.internalID, threeMonthsUninvoicedCustomers_row.entityID,
           threeMonthsUninvoicedCustomers_row.companyName,
@@ -455,7 +522,15 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
 
     }
 
-    function saveRecord() { }
+    function saveRecord() {
+      var customer_id_elem = document.getElementsByClassName("selectCustomer");
+
+      for (var x = 0; x < customer_id_elem.length; x++) {
+        var customerId = customer_id_elem[x].value;
+        console.log(customer_id_elem[x])
+        console.log(customerId)
+      }
+    }
 
     function getDateToday() {
       var date = new Date();
