@@ -17,6 +17,9 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
     var userId = 0;
     var role = 0;
 
+    var notifySalesTeam = false;
+    var notifyITTeam = false;
+
     var baseURL = 'https://1048144.app.netsuite.com';
     if (runtime.EnvType == "SANDBOX") {
       baseURL = 'https://1048144-sb3.app.netsuite.com';
@@ -40,19 +43,6 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
 
     function afterSubmit() {
       $(".se-pre-con").fadeOut("slow");
-
-      // if (!isNullorEmpty($('#result_zee_leads_list').val())) {
-      //   $('#zee_leads_list_preview').removeClass('hide');
-      //   $('#zee_leads_list_preview').show();
-      // }
-
-      // $('#result_zee_leads_list').on('change', function () {
-      //   $('#zee_leads_list_preview').removeClass('hide');
-      //   $('#zee_leads_list_preview').show();
-      // });
-
-      // $('#zee_leads_list_preview').removeClass('hide');
-      // $('#zee_leads_list_preview').show();
     }
 
     function pageInit() {
@@ -65,8 +55,6 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
       threeMonthsUninvoicedCustomersSet = [];
       sixMonthsUninvoicedCustomersDataSet = [];
       sixMonthsUninvoicedCustomersSet = [];
-
-
 
       console.log('inside pageInit() function')
 
@@ -145,8 +133,15 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
         }
       });
 
+      //On click of the Notify Sales Team button
       $(document).on('click', '#notifySalesTeam', function () {
+        notifySalesTeam = true;
+        document.getElementById('submitter').click();
+      });
 
+      // On click of the Notify IT Team button
+      $(document).on('click', '#notifyITTeam', function () {
+        notifyITTeam = true;
         document.getElementById('submitter').click();
       });
 
@@ -162,21 +157,6 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
         pageLength: 1000,
         order: [],
         select: true,
-        // columns: [{
-
-        // }, {
-        //   title: 'LINK'
-        // }, {
-        //   title: 'ID'
-        // }, {
-        //   title: 'Customer Name'
-        // }, {
-        //   title: 'Franchisee'
-        // }, {
-        //   title: 'Status'
-        // }, {
-        //   title: 'Last Invocie Date'
-        // }],
         columnDefs: [{
           targets: 0,
           searchable: false,
@@ -187,19 +167,32 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
               + $('<div/>').text(data).html() + '" >';
           }
         }, {
-          targets: [2, 3, 6],
+          targets: [2, 3, 7],
           className: 'bolded'
         }, {
           className: "text-center",
-          targets: [0, 1, 2, 3, 4, 5, 6]
+          targets: [0, 1, 2, 3, 4, 5, 6, 7]
         }], select: {
           style: 'multi',
           selector: 'td:first-child'
         },
         "createdRow": function (row, data, dataIndex) {
           $(row).attr("id", "tblRow_" + data[0]);
+          console.log('inside createdRow ' + data);
+          if (data[6] == 1 || data[6] == '1') {
+            $(row).css('background-color', 'lightgrey !important');
+            $(row).css('pointer-events', 'none !important');
+          }
         },
-        rowCallback: function (row, data, index) { }
+        rowCallback: function (row, data, index) {
+          console.log('inside rowCallBack data[5] ' + data[5]);
+          console.log('inside rowCallBack data[6] ' + data[6]);
+          console.log('inside rowCallBack data[7] ' + data[7]);
+          if (data[6] == 1 || data[6] == '1') {
+            console.log('inside excluded')
+            $('tr', row).css({ "background-color": "lightgrey !important", "pointer-events": "none !important" });
+          }
+        }
       });
 
       // dataTable2 = $('#6_months_list').DataTable({
@@ -293,6 +286,11 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
           label: "Status"
         });
 
+        var excludeCancellation = customerList3MonthsResultSet.getValue({
+          name: "custentity_exclude_cancellation_process",
+          summary: "GROUP"
+        });
+
         var invoiceDate = customerList3MonthsResultSet.getValue({
           name: "trandate",
           join: "transaction",
@@ -308,6 +306,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
           franchiseeName: franchiseeName,
           customerStatus: customerStatus,
           customerStatusText: customerStatusText,
+          excludeCancellation: excludeCancellation,
           invoiceDate: invoiceDate
         });
 
@@ -406,23 +405,23 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
       if (!isNullorEmpty(threeMonthsUninvoicedCustomers_rows)) {
         threeMonthsUninvoicedCustomers_rows.forEach(function (threeMonthsUninvoicedCustomers_row, index) {
 
-          if (role == '1022') {
-
+          if (threeMonthsUninvoicedCustomers_row.excludeCancellation == 1 || threeMonthsUninvoicedCustomers_row.excludeCancellation == '1') {
+            var linkURL = '<p><b>EXCLUDED FROM CANCELLATION</b></p>'
           } else {
-
+            var linkURL =
+              '<button class="form-control btn btn-xs btn-primary" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
+              threeMonthsUninvoicedCustomers_row.internalID +
+              '" class="viewCustomerLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-info" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
+              threeMonthsUninvoicedCustomers_row.internalID +
+              '" class="create_note" style="cursor: pointer !important;color: white;">USER NOTE</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
+              threeMonthsUninvoicedCustomers_row.internalID +
+              '" class="lostCustomer" style="cursor: pointer !important;color: white;">CANCEL</a></button>';
           }
-          var linkURL =
-            '<button class="form-control btn btn-xs btn-primary" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-            threeMonthsUninvoicedCustomers_row.internalID +
-            '" class="viewCustomerLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-info" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-            threeMonthsUninvoicedCustomers_row.internalID +
-            '" class="create_note" style="cursor: pointer !important;color: white;">USER NOTE</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
-            threeMonthsUninvoicedCustomers_row.internalID +
-            '" class="lostCustomer" style="cursor: pointer !important;color: white;">CANCEL</a></button>';
+
 
           threeMonthsUninvoicedCustomersDataSet.push([threeMonthsUninvoicedCustomers_row.internalID, linkURL, threeMonthsUninvoicedCustomers_row.entityID,
           threeMonthsUninvoicedCustomers_row.companyName,
-          threeMonthsUninvoicedCustomers_row.franchiseeName, threeMonthsUninvoicedCustomers_row.customerStatusText,
+          threeMonthsUninvoicedCustomers_row.franchiseeName, threeMonthsUninvoicedCustomers_row.customerStatusText, threeMonthsUninvoicedCustomers_row.excludeCancellation,
           threeMonthsUninvoicedCustomers_row.invoiceDate
           ]);
           threeMonthsUninvoicedCustomersCsvSet.push([threeMonthsUninvoicedCustomers_row.internalID, threeMonthsUninvoicedCustomers_row.entityID,
@@ -527,9 +526,46 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
 
       for (var x = 0; x < customer_id_elem.length; x++) {
         var customerId = customer_id_elem[x].value;
-        console.log(customer_id_elem[x])
-        console.log(customerId)
+        var customerChecked = customer_id_elem[x].checked;
+        if (customerChecked == true) {
+
+          var customerRecord = record.load({
+            type: record.Type.CUSTOMER,
+            id: customerId
+          });
+
+          customerRecord.setValue({
+            fieldId: 'custentity_exclude_cancellation_process',
+            value: 1
+          });
+
+          customerRecord.save();
+        }
       }
+      if (notifySalesTeam == true) {
+        var emailBody = 'Please Click the below link. \n Link: https://1048144.app.netsuite.com/app/site/hosting/scriptlet.nl?script=1569&deploy=1&compid=1048144&whence=';
+        email.send({
+          author: 409635,
+          body: emailBody,
+          recipients: 'belinda.urbani@mailplus.com.au',
+          attachments: null,
+          subject: 'Uninvoiced Customers - Last 3 Months - Call Down'
+        });
+      }
+
+      if (notifyITTeam == true) {
+        var emailBody = 'Please Click the below link. \n Link: https://1048144.app.netsuite.com/app/site/hosting/scriptlet.nl?script=1569&deploy=1&compid=1048144&whence=';
+        email.send({
+          author: 409635,
+          body: emailBody,
+          recipients: 'popie.popie@mailplus.com.au',
+          cc: ['ankith.ravindran@mailplus.com.au'],
+          attachments: null,
+          subject: 'Uninvoiced Customers - Last 3 Months - Cancel Customers'
+        });
+      }
+
+      return true;
     }
 
     function getDateToday() {

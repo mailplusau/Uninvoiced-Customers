@@ -87,7 +87,10 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
         context.response.writePage(form);
 
       } else {
-
+        redirect.toSuitelet({
+          scriptId: 'customscript_sl2_uninvoiced_customer_lis',
+          deploymentId: 'customdeploy1',
+        });
       }
     }
 
@@ -135,9 +138,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
           '<div class="form-group container zee_available_buttons_section">';
         inlineHtml += '<div class="row">';
         inlineHtml +=
-          '<div class="col-xs-6"><input type="button" value="NOTIFY SALES TEAM" class="form-control btn btn-primary" id="notifySalesTeam" /></div>'
-        inlineHtml +=
-          '<div class="col-xs-6 createLead"><input type="button" value="EXCLUDE ALL CUSTOMERS" class="form-control btn btn-primary" id="excludeAllCustomers" /></div>'
+          '<div class="col-xs-12"><input type="button" value="NOTIFY SALES TEAM" class="form-control btn btn-primary" id="notifySalesTeam" /></div>'
         inlineHtml += '</div>';
         inlineHtml += '</div>';
       } else if (role == '1005') {
@@ -145,9 +146,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
           '<div class="form-group container zee_available_buttons_section">';
         inlineHtml += '<div class="row">';
         inlineHtml +=
-          '<div class="col-xs-6"><input type="button" value="NOTIFY IT TEAM" class="form-control btn btn-primary" id="notifySalesTeam" /></div>'
-        inlineHtml +=
-          '<div class="col-xs-6 createLead"><input type="button" value="EXCLUDE ALL CUSTOMERS" class="form-control btn btn-primary" id="excludeAllCustomers" /></div>'
+          '<div class="col-xs-12"><input type="button" value="NOTIFY IT TEAM" class="form-control btn btn-primary" id="notifyITTeam" /></div>'
         inlineHtml += '</div>';
         inlineHtml += '</div>';
       } else if (role == '3' || role == '1032') {
@@ -155,11 +154,9 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
           '<div class="form-group container zee_available_buttons_section">';
         inlineHtml += '<div class="row">';
         inlineHtml +=
-          '<div class="col-xs-4"><input type="button" value="NOTIFY SALES TEAM" class="form-control btn btn-primary" id="notifySalesTeam" /></div>'
+          '<div class="col-xs-6"><input type="button" value="NOTIFY SALES TEAM" class="form-control btn btn-primary" id="notifySalesTeam" /></div>'
         inlineHtml +=
-          '<div class="col-xs-4"><input type="button" value="NOTIFY IT TEAM" class="form-control btn btn-primary" id="notifySalesTeam" /></div>'
-        inlineHtml +=
-          '<div class="col-xs-4 createLead"><input type="button" value="EXCLUDE ALL CUSTOMERS" class="form-control btn btn-primary" id="excludeAllCustomers" /></div>'
+          '<div class="col-xs-6"><input type="button" value="NOTIFY IT TEAM" class="form-control btn btn-primary" id="notifyITTeam" /></div>'
         inlineHtml += '</div>';
         inlineHtml += '</div>';
       }
@@ -205,7 +202,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
       // inlineHtml +=
       //   '<div role="tabpanel" class="tab-pane" id="6_months_list_tab">';
       // inlineHtml += '<br></br>';
-      inlineHtml += dataTable('6_months_list');
+      // inlineHtml += dataTable('6_months_list');
       inlineHtml += '</div>';
 
       // inlineHtml += '</div></div>';
@@ -230,7 +227,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
         '" class="table table-responsive table-striped customer tablesorter" style="width: 100%;">';
       inlineHtml += '<thead style="color: white;background-color: #379E8F;">';
       inlineHtml += '<tr>';
-      inlineHtml += ' <th><input name="select_all" value="1" id="example-select-all" type="checkbox" /></th><th>Link</th><th>ID</th><th>COMPANY NAME</th><th>FRANCHISEE</th><th>STATUS</th><th>LAST INVOICE DATE</th>'
+      inlineHtml += ' <th><input name="select_all" value="1" id="example-select-all" type="checkbox" /></th><th>Link</th><th>ID</th><th>COMPANY NAME</th><th>FRANCHISEE</th><th>STATUS</th><th>EXCLUDE</th><th>LAST INVOICE DATE</th>'
       inlineHtml += '</tr>';
       inlineHtml += '</thead>';
 
