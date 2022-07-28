@@ -290,6 +290,10 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
           name: "custentity_exclude_cancellation_process",
           summary: "GROUP"
         });
+        var excludeCancellationText = customerList3MonthsResultSet.getText({
+          name: "custentity_exclude_cancellation_process",
+          summary: "GROUP"
+        });
 
         var invoiceDate = customerList3MonthsResultSet.getValue({
           name: "trandate",
@@ -307,6 +311,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
           customerStatus: customerStatus,
           customerStatusText: customerStatusText,
           excludeCancellation: excludeCancellation,
+          excludeCancellationText: excludeCancellationText,
           invoiceDate: invoiceDate
         });
 
@@ -421,7 +426,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
 
           threeMonthsUninvoicedCustomersDataSet.push([threeMonthsUninvoicedCustomers_row.internalID, linkURL, threeMonthsUninvoicedCustomers_row.entityID,
           threeMonthsUninvoicedCustomers_row.companyName,
-          threeMonthsUninvoicedCustomers_row.franchiseeName, threeMonthsUninvoicedCustomers_row.customerStatusText, threeMonthsUninvoicedCustomers_row.excludeCancellation,
+          threeMonthsUninvoicedCustomers_row.franchiseeName, threeMonthsUninvoicedCustomers_row.customerStatusText, threeMonthsUninvoicedCustomers_row.excludeCancellationText,
           threeMonthsUninvoicedCustomers_row.invoiceDate
           ]);
           threeMonthsUninvoicedCustomersCsvSet.push([threeMonthsUninvoicedCustomers_row.internalID, threeMonthsUninvoicedCustomers_row.entityID,
