@@ -32,7 +32,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
         dateFrom = context.request.parameters.date_from;
 
         var form = ui.createForm({
-          title: 'Uninvoiced Customers - Last 3 Months'
+          title: 'Uninvoiced Customers - Last 3 Months or more'
         });
 
         //INITIALIZATION OF JQUERY AND BOOTSTRAP

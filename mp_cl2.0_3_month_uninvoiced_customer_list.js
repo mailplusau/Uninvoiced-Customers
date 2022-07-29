@@ -154,7 +154,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
       dataTable = $('#3_months_list').DataTable({
         destroy: true,
         data: threeMonthsUninvoicedCustomersDataSet,
-        pageLength: 1000,
+        pageLength: 500,
         order: [],
         select: true,
         columnDefs: [{
@@ -234,7 +234,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
 
       //NetSuite Search: AUDIT - Customers - No Invoices last 3 Months
       var searchCustomerList3Months = search.load({
-        id: 'customsearch_no_inv_last_3_months',
+        id: 'customsearch_no_inv_last_3_months_more',
         type: 'customer'
       });
 
@@ -294,6 +294,9 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
           name: "custentity_exclude_cancellation_process",
           summary: "GROUP"
         });
+        if (isNullorEmpty(excludeCancellation)) {
+          excludeCancellationText = 'No';
+        }
 
         var invoiceDate = customerList3MonthsResultSet.getValue({
           name: "trandate",
