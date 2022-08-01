@@ -227,7 +227,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record',
         '" class="table table-responsive table-striped customer tablesorter" style="width: 100%;">';
       inlineHtml += '<thead style="color: white;background-color: #379E8F;">';
       inlineHtml += '<tr>';
-      inlineHtml += ' <th><input name="select_all" value="1" id="example-select-all" type="checkbox" /></th><th>Link</th><th>ID</th><th>COMPANY NAME</th><th>FRANCHISEE</th><th>STATUS</th><th>EXCLUDE</th><th>LAST INVOICE DATE</th>'
+      inlineHtml += ' <th>EXCLUDE FROM </br>CANCELLATION</br><input name="select_all" value="1" id="example-select-all" type="checkbox" /></th><th>Link</th><th>ID</th><th>COMPANY NAME</th><th>FRANCHISEE</th><th>STATUS</th><th>EXCLUDE</th><th>LAST INVOICE DATE</th>'
       inlineHtml += '</tr>';
       inlineHtml += '</thead>';
 

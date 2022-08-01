@@ -154,7 +154,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
       dataTable = $('#3_months_list').DataTable({
         destroy: true,
         data: threeMonthsUninvoicedCustomersDataSet,
-        pageLength: 500,
+        pageLength: 2000,
         order: [],
         select: true,
         columnDefs: [{
@@ -170,6 +170,9 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
           targets: [2, 3, 7],
           className: 'bolded'
         }, {
+          targets: [0],
+          className: 'col-xs-1'
+        }, {
           className: "text-center",
           targets: [0, 1, 2, 3, 4, 5, 6, 7]
         }], select: {
@@ -178,16 +181,12 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
         },
         "createdRow": function (row, data, dataIndex) {
           $(row).attr("id", "tblRow_" + data[0]);
-          console.log('inside createdRow ' + data);
           if (data[6] == 1 || data[6] == '1') {
             $(row).css('background-color', 'lightgrey !important');
             $(row).css('pointer-events', 'none !important');
           }
         },
         rowCallback: function (row, data, index) {
-          console.log('inside rowCallBack data[5] ' + data[5]);
-          console.log('inside rowCallBack data[6] ' + data[6]);
-          console.log('inside rowCallBack data[7] ' + data[7]);
           if (data[6] == 1 || data[6] == '1') {
             console.log('inside excluded')
             $('tr', row).css({ "background-color": "lightgrey !important", "pointer-events": "none !important" });
@@ -531,7 +530,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
 
     function saveRecord() {
       var customer_id_elem = document.getElementsByClassName("selectCustomer");
-
+      console.log(customer_id_elem.length)
       for (var x = 0; x < customer_id_elem.length; x++) {
         var customerId = customer_id_elem[x].value;
         var customerChecked = customer_id_elem[x].checked;
@@ -556,7 +555,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
           author: 409635,
           body: emailBody,
           recipients: 'belinda.urbani@mailplus.com.au',
-          attachments: null,
+          attachments: ['luke.forbes@mailplus.com.au'],
           subject: 'Uninvoiced Customers - Last 3 Months - Call Down'
         });
       }
