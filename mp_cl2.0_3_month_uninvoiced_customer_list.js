@@ -63,13 +63,15 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
       var rows = dataTable.rows({ 'search': 'applied' }).nodes();
       $('input[type="checkbox"]', rows).prop('checked', $('#example-select-all').checked);
 
-      $(".lostCustomer").click(function () {
+      $(document).on('click', '.lostCustomer', function (event) {
         var customerInternalID = $(this).attr("data-id");
 
         var cancelCustomerUrl = 'https://1048144.app.netsuite.com/app/site/hosting/scriptlet.nl?script=796&deploy=1&compid=1048144&custid=' + customerInternalID;
         console.log(cancelCustomerUrl);
 
         window.location.href = cancelCustomerUrl;
+
+        return false;
 
       });
 
@@ -420,7 +422,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
               threeMonthsUninvoicedCustomers_row.internalID +
               '" class="viewCustomerLead" style="cursor: pointer !important;color: white;">VIEW</a></button> <button class="form-control btn btn-xs btn-info" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
               threeMonthsUninvoicedCustomers_row.internalID +
-              '" class="create_note" style="cursor: pointer !important;color: white;">USER NOTE</a></button> <button class="form-control btn btn-xs btn-danger" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
+              '" class="create_note" style="cursor: pointer !important;color: white;">USER NOTE</a></button> <button class="form-control btn btn-xs btn-danger lostCustomer" style="cursor: not-allowed !important;width: fit-content;"><a data-id="' +
               threeMonthsUninvoicedCustomers_row.internalID +
               '" class="lostCustomer" style="cursor: pointer !important;color: white;">CANCEL</a></button>';
           }
