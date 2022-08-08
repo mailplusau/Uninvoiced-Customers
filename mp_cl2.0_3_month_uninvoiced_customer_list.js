@@ -66,7 +66,7 @@ define(['N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log',
       $(document).on('click', '.lostCustomer', function (event) {
         var customerInternalID = $(this).attr("data-id");
 
-        var cancelCustomerUrl = 'https://1048144.app.netsuite.com/app/site/hosting/scriptlet.nl?script=796&deploy=1&compid=1048144&custid=' + customerInternalID;
+        var cancelCustomerUrl = 'https://1048144.app.netsuite.com/app/site/hosting/scriptlet.nl?script=796&deploy=1&compid=1048144&custid=' + customerInternalID + '&scriptid=customscript_sl2_uninvoiced_customer_lis&deployid=customdeploy1';
         console.log(cancelCustomerUrl);
 
         window.location.href = cancelCustomerUrl;
